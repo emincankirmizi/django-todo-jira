@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <main id="registerMain" class="d-flex flex-row h-100 align-items-center justify-content-center">
+        <div class="container">
+            <div id="registerForm">
+                <div id="userCard" class="card bg-dark text-white text-center col-12 col-sm-7 col-xl-5 col-lg-6 m-auto">
+                    <img class="card-img-top" style="object-fit: contain" height="50"
+                         src="https://gfxmag.com/wp-content/uploads/2016/10/thinking-face-emoji-emoticon-vector-icon-2.png"
+                         alt="Çöz bakalım!">
+                    <div class="card-header text-center">
+                        <h4>Hesap Oluştur</h4>
+                    </div>
+                    <div class="card-body col-md-8 col-xs-5 m-auto">
+                        <div class="">
+                            <form method="POST" action="">
+                                {% csrf_token %}
+                                <div class="form-group d-flex flex-row">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text rounded-0"><i class="fa fa-user-circle"
+                                                                                    aria-hidden="true"></i></span>
+                                    </div>
+                                    {{ form.username }}
+                                </div>
+                                <div class="form-group d-flex flex-row">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text rounded-0"><i class="fa fa-envelope"
+                                                                                    aria-hidden="true"></i></span>
+                                    </div>
+                                    {{ form.email }}
+                                </div>
+                                <div class="form-group d-flex flex-row">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text rounded-0"><i class="fa fa-key"
+                                                                                    aria-hidden="true"></i></span>
+                                    </div>
+                                    {{ form.password1 }}
+                                </div>
+                                <div class="form-group d-flex flex-row">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text rounded-0"><i class="fa fa-key"
+                                                                                    aria-hidden="true"></i></span>
+                                    </div>
+                                    {{ form.password2 }}
+                                </div>
+                                <button type="submit" class="btn btn-primary">Kaydol &#128527;</button>
+                            </form>
+                            {{ form.errors }}
+                            <div id="registerLogin" class="mt-2">
+                                <p>Hesabın mı var? <a href="login">Üye girişi &#128519;</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const djangoFormFields = document.getElementsByTagName('input')
+
+        djangoFormFields[1].placeholder = "Kullanıcı Adı"
+        djangoFormFields[2].placeholder = "Email Adresi"
+        djangoFormFields[3].placeholder = "Şifre"
+        djangoFormFields[4].placeholder = "Şifre"
+
+        for (let field in djangoFormFields) {
+            djangoFormFields[field].className += ' form-control rounded-0'
+        }
+    </script>
+
+{% endblock %}

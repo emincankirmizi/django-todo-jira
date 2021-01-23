@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <main id="loginMain" class="d-flex flex-row h-100 align-items-center justify-content-center">
+        <div class="container">
+            <div id="loginForm">
+                <div id="userCard" class="card bg-dark text-white text-center col-12 col-sm-7 col-xl-5 col-lg-6 m-auto">
+                    <img class="card-img-top mb-2" style="object-fit: contain" height="50"
+                         src="https://gfxmag.com/wp-content/uploads/2016/10/thinking-face-emoji-emoticon-vector-icon-2.png"
+                         alt="Çöz bakalım!">
+                    <div class="card-header text-center">
+                        <h4>Üye Girişi &#128526;</h4>
+                    </div>
+                    <div class="card-body col-md-8 col-xs-5 m-auto">
+                        <div>
+                            <form method="POST" action="">
+                                {% csrf_token %}
+                                <div class="form-group d-flex flex-row">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text rounded-0"><i class="fa fa-user-circle"
+                                                                                    aria-hidden="true"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control rounded-0" name="username" id="inputUsername"
+                                           aria-describedby="usernameHelp" style="background-clip: border-box"
+                                           placeholder="Kullanıcı Adı">
+                                </div>
+                                <div class="form-group d-flex flex-row">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text rounded-0"><i class="fa fa-key"
+                                                                                    aria-hidden="true"></i></span>
+                                    </div>
+                                    <input type="password" class="form-control rounded-0" name="password" id="inputPassword"
+                                           style="background-clip: border-box" placeholder="Şifre">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Giriş yap &#128578;</button>
+                            </form>
+                        </div>
+                        <div id="messages" clas="text-white text-center" style="background: #096bcb; margin-top: 5px;">
+                            {% for message in messages %}
+                                <p> {{ message }}</p>
+                            {% endfor %}
+                        </div>
+                        <div id="registerLogin" class="mt-1">
+                            <p>Hesabın yok mu? <a href="register">Hesap oluştur &#128525;</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+{% endblock %}

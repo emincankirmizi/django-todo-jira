@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-dark border-bottom sticky-top">
+            <a class="navbar-brand" href="#">{{ request.user }} &#128526;</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <div>
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="#">Home</a>
+                        </li>
+                        <a type="button" class="nav-link text-white" href="home/new-issue">
+                            Yeni bir iş ekle
+                        </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="ml-sm-auto">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link text-danger" href="logout">Çıkış &#128546;</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main id="homeMain" class="d-flex flex-row mt-3">
+        <div class="container-fluid">
+            {% block issue %}
+            {% endblock %}
+            <div class="card-group justify-content-around">
+                <div class="card col-sm-12 col-lg-4 bg-dark text-white main-card">
+                    <div id="todos" class="card-body">
+                        <h5 class="card-title text-center">Yapılacaklar Listesi</h5>
+                        <div>
+                            <ul id="todoList" class="connectedSortable">
+                                {% for issue in issues.values %}
+                                    {% if issue.status == 3 %}
+                                        <li id="{{ issue.id }}" style="list-style-type: none">
+                                            <div class="card mt-2 issue-card" draggable="true">
+                                                <p><span class="point"
+                                                         style="background-color:{% if issue.type == 1 %} #0062cc {% elif issue.type == 2 %} green {% elif issue.type == 3 %} #ffc107 {% elif issue.type == 4 %} crimson{% endif %}"></span><a
+                                                        href="home/issue/{{ issue.id }}">Issue-{{ issue.id }}</a>&nbsp;{{ issue.title }}
+                                                </p>
+                                            </div>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                    </div>
+                </div>
+                <div class="card col-sm-12 col-lg-4 bg-dark text-white main-card">
+                    <div id="inProgresses" class="card-body">
+                        <h5 class="card-title text-center">Yapılma Aşaması</h5>
+                        <div>
+                            <ul id="progressList" class="connectedSortable">
+                                {% for issue in issues.values %}
+                                    {% if issue.status == 2 %}
+                                        <li id="{{ issue.id }}" style="list-style-type: none">
+                                            <div class="card mt-2 issue-card">
+                                                <p><span class="point"
+                                                         style="background-color:{% if issue.type == 1 %} #0062cc {% elif issue.type == 2 %} green {% elif issue.type == 3 %} #ffc107 {% elif issue.type == 4 %} crimson{% endif %}"></span><a
+                                                        href="home/issue/{{ issue.id }}">Issue-{{ issue.id }}</a>&nbsp;{{ issue.title }}
+                                                </p>
+                                            </div>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                    </div>
+                </div>
+                <div class="card col-sm-12 col-lg-4 bg-dark text-white main-card">
+                    <div id="dones" class="card-body">
+                        <h5 class="card-title">Yapılanlar Listesi</h5>
+                        <div>
+                            <ul id="doneList" class="connectedSortable">
+                                {% for issue in issues.values %}
+                                    {% if issue.status == 1 %}
+                                        <li id="{{ issue.id }}" style="list-style-type: none">
+                                            <div class="card mt-2 issue-card">
+                                                <p><span class="point"
+                                                         style="background-color:{% if issue.type == 1 %} #0062cc {% elif issue.type == 2 %} green {% elif issue.type == 3 %} #ffc107 {% elif issue.type == 4 %} crimson{% endif %}"></span>
+                                                    <del>
+                                                        <a href="home/issue/{{ issue.id }}">Issue-{{ issue.id }}</a>&nbsp;{{ issue.title }}
+                                                    </del>
+                                                </p>
+                                            </div>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const csrftoken = '{{ csrf_token }}';
+        $("#todoList, #progressList, #doneList").sortable({
+            connectWith: ".connectedSortable",
+            scroll: false,
+            placeholder: "placeholder",
+            stop: function (evt, ui) {
+                updateLists(evt, ui)
+            }
+        }).disableSelection();
+
+        function updateLists(e, u) {
+            const issueId = u.item.context.id;
+            const status = u.item.context.parentElement.id
+            let status_id;
+            $.get("home/issue/get/" + issueId, function (data, s) {
+                data = JSON.parse(data);
+                switch (status) {
+                    case "todoList":
+                        status_id = 3;
+                        break;
+                    case "progressList":
+                        status_id = 2;
+                        break;
+                    case "doneList":
+                        status_id = 1;
+                        break;
+                }
+                data.status = status_id
+                $.ajaxSetup({
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader('X-CSRFToken', csrftoken);
+                    }
+                });
+                $.ajax({
+                    url: window.location.href + "/post_new_issue",
+                    type: "post",
+                    data: JSON.stringify(data),
+                    contentType: 'application/json',
+                    success: function (data) {
+                        $(".alert").remove()
+                        $("body").append("<div class=\"alert alert-success\">\n" +
+                            "    <strong>Başarılı!</strong> Issue başarılı bir şekilde güncellendi.\n" +
+                            "  </div>")
+                        $(".alert").fadeOut(4000);
+                    },
+                    error: function (data) {
+                        $(".alert").remove()
+                        $("body").append("<div class=\"alert alert-error\">\n" +
+                            "    <strong>Hata!</strong> Issue güncellenirken bir hata oluştu.\n" +
+                            "  </div>")
+                        $(".alert").fadeOut(4000);
+                    }
+                })
+            });
+        }
+    </script>
+
+{% endblock %}
